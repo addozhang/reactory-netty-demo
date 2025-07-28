@@ -1,0 +1,51 @@
+# Maven
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Certificates and keys
+*.crt
+*.key
+*.srl
+*.p12
+*.csr
+
+# Build output
+*.jar
+*.war
+*.ear
+
+# Shell scripts
+run-demo.sh
+
+# Docker
+*.pid
+
+# Misc
+*.bak
+*.swp
+
+# Ignore generated files
+**/generated-sources/
+**/maven-status/
