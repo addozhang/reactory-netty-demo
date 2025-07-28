@@ -115,3 +115,9 @@ To stop all containers, run:
 ```sh
 docker-compose down
 ```
+
+## Capture TCP Traffic
+
+```shell
+docker run --rm --net=host -v $PWD/tcpdump:/tcpdump kaazing/tcpdump
+```
