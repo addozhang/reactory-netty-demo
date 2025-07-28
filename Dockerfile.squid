@@ -1,0 +1,7 @@
+FROM ubuntu/squid:6.6-24.04_edge
+
+# Copy the custom root CA into the system certificate directory
+COPY demo-root-ca.crt /usr/local/share/ca-certificates/
+
+# Update the system-wide CA bundle
+RUN update-ca-certificates

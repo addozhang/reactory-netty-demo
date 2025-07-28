@@ -1,0 +1,60 @@
+version: '3.8'
+services:
+  squid:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.squid
+    image: squid:latest
+    container_name: squid-proxy
+    hostname: squid-proxy
+    ports:
+      - "3128:3128"
+    volumes:
+      - ./squid/squid.conf:/etc/squid/squid.conf:ro
+      - ./demo-client/src/main/resources/demo-root-ca.crt:/etc/squid/demo-root-ca.crt:ro
+    networks:
+      - demo-net
+
+  demo-server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.server
+    image: demo-server:latest
+    container_name: demo-server
+    hostname: demo-server
+    ports:
+      - "8080:8080"
+    networks:
+      - demo-net
+    depends_on:
+      - squid
+    environment:
+      - server.tomcat.keep-alive-timeout=150000
+
+  demo-client:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.client
+    image: demo-client:latest
+    container_name: demo-client
+    hostname: demo-client
+    ports:
+      - "8081:8081"
+    environment:
+      - demo.server.host=https://demo-server:8080
+      - HTTPS_PROXY=http://squid-proxy:3128
+      - HTTP_PROXY=http://squid-proxy:3128
+      - JAVA_TOOL_OPTIONS=-Dhttp.proxyHost=squid-proxy -Dhttp.proxyPort=3128 -Dhttps.proxyHost=squid-proxy -Dhttps.proxyPort=3128 -Dhttp.nonProxyHosts=""
+      - logging.level.reactor.netty.proxy=DEBUG
+      - logging.level.reactor.netty.http.client=DEBUG
+      - logging.level.reactor.netty.resources=DEBUG
+      - logging.level.reactor.netty.transport=DEBUG
+      - demo.client.wiretap=true
+    networks:
+      - demo-net
+    depends_on:
+      - demo-server
+      - squid
+networks:
+  demo-net:
+    driver: bridge

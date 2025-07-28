@@ -1,0 +1,13 @@
+# Build stage
+FROM maven:3.9.6-eclipse-temurin-17 AS build
+WORKDIR /build
+COPY . .
+RUN mvn clean package -DskipTests
+
+# Run stage
+FROM alpine/java:17
+WORKDIR /app
+COPY --from=build /build/demo-server/target/demo-server-*.jar app.jar
+COPY demo-server/src/main/resources/demo-server-keystore.p12 /app/demo-server-keystore.p12
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
